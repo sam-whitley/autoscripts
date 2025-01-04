@@ -19,7 +19,7 @@ echo.
 set /P "var=Choose an option [1-3]: "
 
 :: [3D-Printer Menu Options]
-if "%var%"=="1" exit /b
+if "%var%"=="1" goto :main_menu
 if "%var%"=="2" goto :prusa_menu
 if "%var%"=="3" goto :cura_menu
 
@@ -151,17 +151,17 @@ pause
 goto :cura_menu
 
 :: [Open Main Menu]
-@REM :main_menu
-@REM cls
-@REM echo Running Main Menu Script...
+:main_menu
+cls
+echo Running Main Menu Script...
 
-@REM :: [Run 3D-Printers Script]
-@REM C:\WINDOWS\system32\cmd.exe /c "curl -s -L https://raw.githubusercontent.com/sam-whitley/autoscripts/refs/heads/main/main_menu.bat -o %TEMP%\main_menu.bat && %TEMP%\main_menu.bat && del %TEMP%\main_menu.bat"
-@REM if errorlevel 1 (
-@REM     echo [ERROR] Failed to run Main Menu script! Please check the connection or script source.
-@REM     pause
-@REM     goto mainMenu
-@REM )
+:: [Run 3D-Printers Script]
+C:\WINDOWS\system32\cmd.exe /c "curl -s -L https://raw.githubusercontent.com/sam-whitley/autoscripts/refs/heads/main/main_menu.bat -o %TEMP%\main_menu.bat && %TEMP%\main_menu.bat && del %TEMP%\main_menu.bat"
+if errorlevel 1 (
+    echo [ERROR] Failed to run Main Menu script! Please check the connection or script source.
+    pause
+    goto mainMenu
+)
 
-@REM pause
-@REM goto mainMenu
+pause
+goto mainMenu
