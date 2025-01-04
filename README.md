@@ -1,7 +1,7 @@
 # Sam's AutoScripts
 This collection of batch scripts automates common tasks, such as resetting 3D printer configurations (PrusaSlicer and UltiMaker Cura) to their default settings. More features coming soon!
 
-## Usage
+## Getting Started
 To run Sam's AutoScripts, follow the steps below:
 
 ### Execute via Command Line...
