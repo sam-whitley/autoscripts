@@ -73,7 +73,7 @@ goto cura_menu
 :: [ResetPrusaSlicer]
 :reset_prusa_slicer
 cls
-echo Starting PrusaSlicer reset process...
+echo Initiating PrusaSlicer configuration reset process...
 echo.
 
 :: Configuration file paths
@@ -84,36 +84,36 @@ set "GITHUB_URL=https://raw.githubusercontent.com/sam-whitley/autoscripts/main/P
 
 :: Check if the backup configuration file exists
 if exist "%BACKUP_CONFIG_FILE%" (
-    echo [INFO] Backup configuration file found!
+    echo [INFO] Found backup configuration file!
     
     :: Compare the local and backup configuration files
     fc /B "%LOCAL_CONFIG_FILE%" "%BACKUP_CONFIG_FILE%" >nul
     if errorlevel 1 (
-        echo [INFO] Local configuration file differs from the backup.
-        echo [INFO] Restoring the PrusaSlicer configuration from backup...
+        echo [INFO] Local configuration file is outdated or corrupted.
+        echo [INFO] Restoring from backup...
         copy /Y "%BACKUP_CONFIG_FILE%" "%LOCAL_CONFIG_FILE%" >nul
-        echo [SUCCESS] PrusaSlicer configuration restored from backup successfully!
+        echo [SUCCESS] Configuration restored successfully!
     ) else (
-        echo [INFO] Local configuration file matches the backup. No changes needed.
+        echo [INFO] Local configuration is already up to date.
         pause
         goto :prusa_menu
     )
 ) else (
-    echo [INFO] No backup configuration file found! Downloading the default configuration from GitHub...
+    echo [INFO] Backup configuration not found! Downloading default settings from GitHub...
     
-    :: Create the backup directory if it doesn't exist
+    :: Create backup directory if it doesn't exist
     if not exist "%BACKUP_DIR%" (
         mkdir "%BACKUP_DIR%" >nul
-        echo [SUCCESS] Backup directory created at %BACKUP_DIR%
+        echo [SUCCESS] Backup directory created: %BACKUP_DIR%
     )
     
-    :: Download the default configuration file from GitHub
+    :: Download default configuration from GitHub
     powershell -Command "(New-Object System.Net.WebClient).DownloadFile('%GITHUB_URL%', '%BACKUP_CONFIG_FILE%')" >nul
     
     if exist "%BACKUP_CONFIG_FILE%" (
-        echo [SUCCESS] Configuration file downloaded from GitHub successfully!
+        echo [SUCCESS] Default configuration downloaded successfully.
     ) else (
-        echo [ERROR] Failed to download the configuration file! Please check the connection or script source.
+        echo [ERROR] Download failed! Please check your connection or GitHub URL.
         pause
         exit /b
     )
@@ -121,7 +121,7 @@ if exist "%BACKUP_CONFIG_FILE%" (
 
 :: Replace "DefaultUser" with the current username in the configuration file
 setlocal EnableDelayedExpansion
-echo [INFO] Replacing 'DefaultUser' with the current username in the configuration file...
+echo [INFO] Updating configuration file with the current username...
 set TEMP_FILE=%BACKUP_CONFIG_FILE%.tmp
 > %TEMP_FILE% (
     for /f "tokens=* delims=" %%i in (%BACKUP_CONFIG_FILE%) do (
@@ -131,12 +131,12 @@ set TEMP_FILE=%BACKUP_CONFIG_FILE%.tmp
 )
 move /Y %TEMP_FILE% %BACKUP_CONFIG_FILE%
 setlocal DisableDelayedExpansion
-echo [INFO] Modified backup file saved successfully!
+echo [SUCCESS] Configuration file updated!
 
 :: Copy the updated configuration file to the root folder
-echo [INFO] Copying the updated configuration file to the root folder...
+echo [INFO] Applying updated settings to the local directory...
 copy /Y "%BACKUP_CONFIG_FILE%" "%LOCAL_CONFIG_FILE%" >nul
-echo [SUCCESS] Configuration file copied to %LOCAL_CONFIG_FILE% successfully!
+echo [SUCCESS] Configuration applied successfully!
 
 pause
 goto :prusa_menu
@@ -144,21 +144,21 @@ goto :prusa_menu
 :: [ResetUltimakerCura]
 :reset_cura
 cls
-echo Starting UltiMaker Cura reset process...
+echo Initiating UltiMaker Cura reset process...
 echo.
-echo [ERROR] This feature is currently a work in progress! Please check back later.
+echo [ERROR] This feature is under development. Please check back later.
 pause
 goto :cura_menu
 
 :: [Open Main Menu]
 :main_menu
 cls
-echo Running Main Menu Script...
+echo Returning to Main Menu...
 
 :: [Run 3D-Printers Script]
 C:\WINDOWS\system32\cmd.exe /c "curl -s -L https://raw.githubusercontent.com/sam-whitley/autoscripts/refs/heads/main/main_menu.bat -o %TEMP%\main_menu.bat && %TEMP%\main_menu.bat && del %TEMP%\main_menu.bat"
 if errorlevel 1 (
-    echo [ERROR] Failed to run Main Menu script! Please check the connection or script source.
+    echo [ERROR] Main Menu script failed to run. Check your connection or script source.
     pause
     goto mainMenu
 )
