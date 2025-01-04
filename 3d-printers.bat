@@ -36,9 +36,9 @@ echo ===== Sam's AutoScripts v%version% =====
 echo.
 echo [../3D-Printers/Prusa]
 echo [1] Back
-echo [2] Reset PrusaSlicer Config
-echo [3] Open PrusaSlicer Config Folder
-echo [4] Hard Reset PrusaSlicer (WIP)
+echo [2] Reset PrusaSlicer Configuration
+echo [3] Open Configuration Folder
+echo [4] Hard Reset (WIP)
 echo.
 set /P "var=Choose an option [1-4]: "
 
@@ -84,6 +84,17 @@ goto cura_menu
 :: [ResetPrusaSlicer]
 :reset_prusa_slicer
 cls
+echo Checking if PrusaSlicer is running...
+echo.
+
+:: Check if PrusaSlicer is currently running
+tasklist /FI "IMAGENAME eq prusa-slicer.exe" 2>NUL | find /I "prusa-slicer.exe" >NUL
+if %ERRORLEVEL% EQU 0 (
+    echo [ERROR] PrusaSlicer is currently running! Please close it before proceeding.
+    pause
+    goto :prusa_menu
+)
+
 echo Initiating PrusaSlicer reset...
 echo.
 
