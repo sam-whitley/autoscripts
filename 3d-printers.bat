@@ -149,3 +149,19 @@ echo.
 echo [ERROR] This feature is currently a work in progress! Please check back later.
 pause
 goto :cura_menu
+
+:: [Open Main Menu]
+:main_menu
+cls
+echo Running Main Menu Script...
+
+:: [Run 3D-Printers Script]
+C:\WINDOWS\system32\cmd.exe /c "curl -s -L https://raw.githubusercontent.com/sam-whitley/autoscripts/refs/heads/main/main_menu.bat -o %TEMP%\main_menu.bat && %TEMP%\main_menu.bat && del %TEMP%\main_menu.bat"
+if errorlevel 1 (
+    echo [ERROR] Failed to run Main Menu script! Please check the connection or script source.
+    pause
+    goto mainMenu
+)
+
+pause
+goto mainMenu
