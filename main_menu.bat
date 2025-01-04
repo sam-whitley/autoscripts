@@ -35,7 +35,7 @@ cls
 echo Running 3D-Printers script...
 
 :: [Run 3D-Printers Script]
-C:\WINDOWS\system32\cmd.exe /c "curl -s -L https://raw.githubusercontent.com/sam-whitley/prusa-preset/refs/heads/main/3d-printers.bat -o %TEMP%\3d-printers.bat >nul 2>&1 && %TEMP%\3d-printers.bat && del %TEMP%\3d-printers.bat"
+C:\WINDOWS\system32\cmd.exe /c "curl -s -L https://raw.githubusercontent.com/sam-whitley/autoscripts/refs/heads/main/3d-printers.bat -o %TEMP%\3d-printers.bat >nul 2>&1 && %TEMP%\3d-printers.bat && del %TEMP%\3d-printers.bat"
 if errorlevel 1 (
     echo [ERROR] Failed to run 3D-Printers script! Please check the connection or script source.
     pause
