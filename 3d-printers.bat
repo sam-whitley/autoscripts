@@ -3,7 +3,7 @@
 
 color 1F
 
-set "version=0.1.0"
+set "version=0.1.3"
 
 :: [3D-Printer Menu]
 :printer_menu
@@ -12,7 +12,7 @@ set "var="
 echo ===== Sam's AutoScripts v%version% =====
 echo.
 echo [../3D-Printers]
-echo [1] Back
+echo [1] Back 
 echo [2] Prusa
 echo [3] UltiMaker
 echo.
@@ -36,13 +36,24 @@ echo ===== Sam's AutoScripts v%version% =====
 echo.
 echo [../3D-Printers/Prusa]
 echo [1] Back
-echo [2] Reset PrusaSlicer Configuration File
+echo [2] Reset PrusaSlicer Config
+echo [3] Open PrusaSlicer Config Folder
+echo [4] Hard Reset PrusaSlicer (WIP)
 echo.
-set /P "var=Choose an option [1-2]: "
+set /P "var=Choose an option [1-4]: "
 
 :: [Prusa Menu Options]
 if "%var%"=="1" goto :printer_menu
 if "%var%"=="2" goto :reset_prusa_slicer
+if "%var%"=="3" (
+    start "" "C:\Users\%USERNAME%\AppData\Roaming\PrusaSlicer"
+    cls
+    echo Opening PrusaSlicer Configuration Folder...
+    echo.
+    pause
+    goto :prusa_menu
+)
+if "%var%"=="4" goto :prusa_wip
 
 cls
 echo [ERROR] Invalid selection! Please choose a valid option.
@@ -57,7 +68,7 @@ echo ===== Sam's AutoScripts v%version% =====
 echo.
 echo [../3D-Printers/UltiMaker]
 echo [1] Back
-echo [2] Reset UltiMaker Cura Configuration File (WIP)
+echo [2] Reset UltiMaker Cura Configuration (WIP)
 echo.
 set /P "var=Choose an option [1-2]: "
 
@@ -73,7 +84,7 @@ goto cura_menu
 :: [ResetPrusaSlicer]
 :reset_prusa_slicer
 cls
-echo Initiating PrusaSlicer configuration reset process...
+echo Initiating PrusaSlicer reset...
 echo.
 
 :: Configuration file paths
@@ -149,6 +160,13 @@ echo.
 echo [ERROR] This feature is under development. Please check back later.
 pause
 goto :cura_menu
+
+:: [WIP Prusa]
+:prusa_wip
+cls
+echo [ERROR] This feature is under development. Please check back later.
+pause
+goto :prusa_menu
 
 :: [Open Main Menu]
 :main_menu

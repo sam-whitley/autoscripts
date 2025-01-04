@@ -4,7 +4,7 @@
 color 1F
 
 :: [Variables]
-set "version=0.1.0"
+set "version=0.1.3"
 set "option1=3D-Printers"
 set "option2=Exit"
 
