@@ -84,27 +84,66 @@ goto cura_menu
 :: [ResetPrusaSlicer]
 :reset_prusa_slicer
 cls
-echo Checking if PrusaSlicer is running...
-echo.
-
-:: Check if PrusaSlicer is currently running
-tasklist /FI "IMAGENAME eq prusa-slicer.exe" 2>NUL | find /I "prusa-slicer.exe" >NUL
-if %ERRORLEVEL% EQU 0 (
-    echo [ERROR] PrusaSlicer is currently running! Please close it before proceeding.
-    pause
-    goto :prusa_menu
-)
-
-echo Initiating PrusaSlicer reset...
-echo.
 
 :: Configuration file paths
 set LOCAL_CONFIG_FILE=C:\Users\%USERNAME%\AppData\Roaming\PrusaSlicer\PrusaSlicer.ini
 set BACKUP_DIR=C:\Users\%USERNAME%\AppData\Roaming\PrusaSlicer\backup
 set BACKUP_CONFIG_FILE=%BACKUP_DIR%\PrusaSlicer.ini
-set "GITHUB_URL=https://raw.githubusercontent.com/sam-whitley/autoscripts/main/PrusaSlicer.ini"
+set "GITHUB_URL=https://raw.githubusercontent.com/sam-whitley/autoscripts/main/PrusaSlicer-pla.ini"
 
-:: Check if the backup configuration file exists
+:: Ask the user for material selection
+cls
+echo Choose the material for the reset:
+echo [1] Back
+echo [2] PLA
+echo [3] ABS
+echo [4] PLA and ABS
+echo.
+set /P "var=Choose an option [1-4]: "
+
+:: Initialize MATERIAL variable
+set "MATERIAL="
+
+:: [Material Selection]
+if "%var%"=="1" goto :prusa_menu
+if "%var%"=="2" set "MATERIAL=PLA"
+if "%var%"=="3" set "MATERIAL=ABS"
+if "%var%"=="4" set "MATERIAL=PLA-ABS"
+
+:: Check if MATERIAL is set correctly
+if not defined MATERIAL (
+    cls
+    echo [ERROR] Invalid selection! Please choose a valid option.
+    pause
+    goto :reset_prusa_slicer
+)
+
+:: Construct the GITHUB_URL based on MATERIAL
+set "GITHUB_URL=https://raw.githubusercontent.com/sam-whitley/autoscripts/main/PrusaSlicer-%MATERIAL%.ini"
+
+:: Check if PrusaSlicer is running using tasklist
+cls
+
+tasklist /FI "IMAGENAME eq prusa-slicer.exe" 2>NUL | find /I "prusa-slicer.exe" > NUL
+if errorlevel 1 (
+    rem PrusaSlicer is not running, proceed with reset
+) else (
+    echo [ERROR] PrusaSlicer is still running! Please close PrusaSlicer before resetting.
+    pause
+    goto :prusa_menu
+)
+
+cls
+echo Initiating PrusaSlicer reset...
+echo.
+
+:: Debugging output for checking URL and material
+echo [DEBUG] Selected material: %MATERIAL%
+
+:: TO-DO FIX THIS SECTION BELOW
+
+
+:: Check if the backup configuration file exists TODO: FIX THIS
 if exist "%BACKUP_CONFIG_FILE%" (
     echo [INFO] Found backup configuration file!
     
@@ -140,6 +179,9 @@ if exist "%BACKUP_CONFIG_FILE%" (
         exit /b
     )
 )
+
+pause
+goto :prusa_menu
 
 :: Replace "DefaultUser" with the current username in the configuration file
 setlocal EnableDelayedExpansion
