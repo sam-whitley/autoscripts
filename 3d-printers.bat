@@ -9,7 +9,7 @@ set "version=0.1.0"
 :printer_menu
 cls
 set "var="
-echo ===== Sam's Scripts v%version% =====
+echo ===== Sam's AutoScripts v%version% =====
 echo.
 echo [../3D-Printers]
 echo [1] Back
