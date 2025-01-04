@@ -19,7 +19,7 @@ echo.
 set /P "var=Choose an option [1-3]: "
 
 :: [3D-Printer Menu Options]
-if "%var%"=="1" goto :main_menu
+if "%var%"=="1" exit /b
 if "%var%"=="2" goto :prusa_menu
 if "%var%"=="3" goto :cura_menu
 
