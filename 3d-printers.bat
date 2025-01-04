@@ -80,7 +80,7 @@ echo.
 set LOCAL_CONFIG_FILE=C:\Users\%USERNAME%\AppData\Roaming\PrusaSlicer\PrusaSlicer.ini
 set BACKUP_DIR=C:\Users\%USERNAME%\AppData\Roaming\PrusaSlicer\backup
 set BACKUP_CONFIG_FILE=%BACKUP_DIR%\PrusaSlicer.ini
-set "GITHUB_URL=https://raw.githubusercontent.com/sam-whitley/prusa-preset/main/PrusaSlicer.ini"
+set "GITHUB_URL=https://raw.githubusercontent.com/sam-whitley/autoscripts/main/PrusaSlicer.ini"
 
 :: Check if the backup configuration file exists
 if exist "%BACKUP_CONFIG_FILE%" (
@@ -113,7 +113,7 @@ if exist "%BACKUP_CONFIG_FILE%" (
     if exist "%BACKUP_CONFIG_FILE%" (
         echo [SUCCESS] Configuration file downloaded from GitHub successfully!
     ) else (
-        echo [ERROR] Failed to download the configuration file! Please check your connection and try again.
+        echo [ERROR] Failed to download the configuration file! Please check the connection or script source.
         pause
         exit /b
     )
