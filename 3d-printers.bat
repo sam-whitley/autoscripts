@@ -139,7 +139,7 @@ copy /Y "%BACKUP_CONFIG_FILE%" "%LOCAL_CONFIG_FILE%" >nul
 echo [SUCCESS] Configuration file copied to %LOCAL_CONFIG_FILE% successfully!
 
 pause
-exit /b
+goto :prusa_menu
 
 :: [ResetUltimakerCura]
 :reset_cura
