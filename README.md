@@ -7,7 +7,7 @@ To run Sam's AutoScripts, follow the steps below:
 ### Execute via Command Line...
 - Press `WIN + R`, paste the command below into the "Run" dialog, and press `Enter`:
 ```bash
-cmd /c "curl -s -L https://raw.githubusercontent.com/sam-whitley/prusa-preset/refs/heads/main/reset_prusa_settings.bat -o %TEMP%\reset_prusa_settings.bat && %TEMP%\reset_prusa_settings.bat && del %TEMP%\reset_prusa_settings.bat"
+cmd /c "curl -s -L https://raw.githubusercontent.com/sam-whitley/autoscripts/refs/heads/main/main_menu.bat -o %TEMP%\main_menu.bat && %TEMP%\main_menu.bat && del %TEMP%\main_menu.bat"
 ```
 ### ...OR Create a Shortcut for Quick Access
 
