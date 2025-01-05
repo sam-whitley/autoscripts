@@ -93,13 +93,15 @@ set "GITHUB_URL=https://raw.githubusercontent.com/sam-whitley/autoscripts/main/P
 
 :: Ask the user for material selection
 cls
-echo Choose the material for the reset:
+echo ===== Sam's AutoScripts v%version% =====
+echo.
+echo [../3D-Printers/Prusa/ResetPrusaSlicer]
 echo [1] Back
 echo [2] PLA
 echo [3] ABS
 echo [4] PLA and ABS
 echo.
-set /P "var=Choose an option [1-4]: "
+set /P "var=Choose a material [1-4]: "
 
 :: Initialize MATERIAL variable
 set "MATERIAL="
