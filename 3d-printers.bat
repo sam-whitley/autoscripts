@@ -158,6 +158,8 @@ if exist "%BACKUP_CONFIG_FILE%" (
         copy /Y "%BACKUP_CONFIG_FILE%" "%LOCAL_CONFIG_FILE%" >nul
         echo [SUCCESS] Configuration restored successfully!
     ) else if /I "%choice%"=="N" (
+        cls
+        echo [INFO] Skipping restore from backup...
         echo [INFO] Downloading default settings from GitHub...
         
         :: Create backup directory if it doesn't exist
