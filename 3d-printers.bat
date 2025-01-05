@@ -6,9 +6,7 @@ color 1F
 :: [Variables]
 set "version=0.1.3"
 set "GITHUB_URL=https://raw.githubusercontent.com/sam-whitley/autoscripts/main/PrusaSlicer.ini"
-set LOCAL_CONFIG_FILE=C:\Users\%USERNAME%\AppData\Roaming\PrusaSlicer\PrusaSlicer.ini
-set BACKUP_DIR=C:\Users\%USERNAME%\AppData\Roaming\PrusaSlicer\backup
-set BACKUP_CONFIG_FILE=%BACKUP_DIR%\PrusaSlicer.ini
+set CONFIG_FILE=C:\Users\%USERNAME%\AppData\Roaming\PrusaSlicer\PrusaSlicer.ini
 
 :: [3D-Printer Menu]
 :printer_menu
@@ -43,9 +41,8 @@ echo [../3D-Printers/Prusa]
 echo [1] Back
 echo [2] Reset PrusaSlicer Configuration
 echo [3] Open Configuration Folder
-echo [4] Hard Reset (WIP)
 echo.
-set /P "var=Choose an option [1-4]: "
+set /P "var=Choose an option [1-3]: "
 
 :: [Prusa Menu Options]
 if "%var%"=="1" goto :printer_menu
@@ -58,7 +55,6 @@ if "%var%"=="3" (
     pause
     goto :prusa_menu
 )
-if "%var%"=="4" goto :prusa_wip
 
 cls
 echo [ERROR] Invalid selection! Please choose a valid option.
@@ -88,8 +84,6 @@ goto cura_menu
 
 :: [ResetPrusaSlicer]
 :reset_prusa_slicer
-
-:: Ask the user for material selection
 cls
 echo ===== Sam's AutoScripts v%version% =====
 echo.
@@ -125,9 +119,6 @@ if not defined MATERIAL (
     goto :reset_prusa_slicer
 )
 
-:: Construct the GITHUB_URL based on MATERIAL
-
-
 :: Check if PrusaSlicer is running using tasklist
 cls
 tasklist /FI "IMAGENAME eq prusa-slicer.exe" 2>NUL | find /I "prusa-slicer.exe" > NUL
@@ -144,81 +135,34 @@ echo PrusaSlicer is not running. Initiating PrusaSlicer reset...
 echo.
 echo [INFO] Selected material: %MATERIAL%
 
-:: Check if the backup configuration file exists
-if exist "%BACKUP_CONFIG_FILE%" (
-    echo [INFO] Found backup configuration file!
-    echo Do you want to restore the local configuration from backup? 
-    set /P "choice=Please select Y or N: "
-    if /I "%choice%"=="Y" (
-        cls
-        echo [INFO] You chose "Y". Restoring configuration from backup...
-        copy /Y "%BACKUP_CONFIG_FILE%" "%LOCAL_CONFIG_FILE%" >nul
-        echo [SUCCESS] Configuration restored successfully!
-    ) else if /I "%choice%"=="N" (
-        cls
-        echo [INFO] You chose "N". Skipping restore from backup...
-        echo [INFO] Downloading default settings from GitHub...
-        
-        :: Create backup directory if it doesn't exist
-        if not exist "%BACKUP_DIR%" (
-            mkdir "%BACKUP_DIR%" >nul
-            echo [SUCCESS] Backup directory created: %BACKUP_DIR%
-        )
-        
-        :: Download default configuration from GitHub
-        powershell -Command "(New-Object System.Net.WebClient).DownloadFile('%GITHUB_URL%', '%BACKUP_CONFIG_FILE%')" >nul
-        
-        if exist "%BACKUP_CONFIG_FILE%" (
-            echo [SUCCESS] Default configuration downloaded successfully!
-        ) else (
-            echo [ERROR] Download failed! Please check your connection or GitHub URL.
-            pause
-            goto :prusa_menu
-        )
-    ) else (
-        cls
-        echo [DEBUG] %choice%
-        echo [ERROR] Invalid choice. Please select Y or N.
-        pause
-        goto :reset_prusa_slicer
-    )
+:: Download default configuration from GitHub
+echo [INFO] Downloading default settings from GitHub...
+powershell -Command "(New-Object System.Net.WebClient).DownloadFile('%GITHUB_URL%', '%CONFIG_FILE%')" >nul
+
+if exist "%CONFIG_FILE%" (
+    echo [SUCCESS] Default configuration downloaded successfully!
 ) else (
-    echo [INFO] Backup configuration file not found! Downloading default settings from GitHub...
-    
-    :: Create backup directory if it doesn't exist
-    if not exist "%BACKUP_DIR%" (
-        mkdir "%BACKUP_DIR%" >nul
-        echo [SUCCESS] Backup directory created: %BACKUP_DIR%
-    )
-    
-    :: Download default configuration from GitHub
-    powershell -Command "(New-Object System.Net.WebClient).DownloadFile('%GITHUB_URL%', '%BACKUP_CONFIG_FILE%')" >nul
-    
-    if exist "%BACKUP_CONFIG_FILE%" (
-        echo [SUCCESS] Default configuration downloaded successfully!
-    ) else (
-        echo [ERROR] Download failed! Please check your connection or GitHub URL.
-        pause
-        goto :prusa_menu
-    )
+    echo [ERROR] Download failed! Please check your connection or GitHub URL.
+    pause
+    goto :prusa_menu
 )
-:: Replace "DefaultUser" with the current username in the configuration file
+
+:: Replace "DefaultUser" with current username and "DefaultMaterial" with selected material
 setlocal EnableDelayedExpansion
-echo [INFO] Updating configuration file with the current username (%USERNAME%)...
-set TEMP_FILE=%BACKUP_CONFIG_FILE%.tmp
+echo [INFO] Updating configuration file with the current username (%USERNAME%) and material (%MATERIAL%)...
+set TEMP_FILE=%CONFIG_FILE%.tmp
 > %TEMP_FILE% (
-    for /f "tokens=* delims=" %%i in (%BACKUP_CONFIG_FILE%) do (
+    for /f "tokens=* delims=" %%i in (%CONFIG_FILE%) do (
         set "line=%%i"
         echo !line:DefaultUser=%USERNAME%!
+        echo !line:DefaultMaterial=%MATERIAL%!
     )
 )
-move /Y %TEMP_FILE% %BACKUP_CONFIG_FILE%
+move /Y %TEMP_FILE% %CONFIG_FILE%
 setlocal DisableDelayedExpansion
 echo [SUCCESS] Configuration file updated!
 
-:: Copy the updated configuration file to the root folder
 echo [INFO] Applying updated settings to the local directory...
-copy /Y "%BACKUP_CONFIG_FILE%" "%LOCAL_CONFIG_FILE%" >nul
 echo [SUCCESS] Configuration applied successfully!
 echo [DONE] PrusaSlicer reset complete!
 pause
@@ -232,13 +176,6 @@ echo.
 echo [ERROR] This feature is under development. Please check back later.
 pause
 goto :cura_menu
-
-:: [WIP Prusa]
-:prusa_wip
-cls
-echo [ERROR] This feature is under development. Please check back later.
-pause
-goto :prusa_menu
 
 :: [Open Main Menu]
 :main_menu
