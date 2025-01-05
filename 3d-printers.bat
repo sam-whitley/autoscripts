@@ -3,7 +3,12 @@
 
 color 1F
 
+:: [Variables]
 set "version=0.1.3"
+set "GITHUB_URL=https://raw.githubusercontent.com/sam-whitley/autoscripts/main/PrusaSlicer.ini"
+set LOCAL_CONFIG_FILE=C:\Users\%USERNAME%\AppData\Roaming\PrusaSlicer\PrusaSlicer.ini
+set BACKUP_DIR=C:\Users\%USERNAME%\AppData\Roaming\PrusaSlicer\backup
+set BACKUP_CONFIG_FILE=%BACKUP_DIR%\PrusaSlicer.ini
 
 :: [3D-Printer Menu]
 :printer_menu
@@ -83,13 +88,6 @@ goto cura_menu
 
 :: [ResetPrusaSlicer]
 :reset_prusa_slicer
-cls
-
-:: Configuration file paths
-set LOCAL_CONFIG_FILE=C:\Users\%USERNAME%\AppData\Roaming\PrusaSlicer\PrusaSlicer.ini
-set BACKUP_DIR=C:\Users\%USERNAME%\AppData\Roaming\PrusaSlicer\backup
-set BACKUP_CONFIG_FILE=%BACKUP_DIR%\PrusaSlicer.ini
-set "GITHUB_URL=https://raw.githubusercontent.com/sam-whitley/autoscripts/main/PrusaSlicer-pla.ini"
 
 :: Ask the user for material selection
 cls
@@ -101,8 +99,7 @@ echo [2] PLA
 echo [3] ABS
 echo [4] PLA and ABS
 echo.
-set "var="
-set /P "var=(Work in Progress) Choose a material [1-4]: "
+set /P "var=Choose a material [1-4]: "
 
 :: Handle empty input
 if "%var%"=="" (
@@ -129,7 +126,7 @@ if not defined MATERIAL (
 )
 
 :: Construct the GITHUB_URL based on MATERIAL
-set "GITHUB_URL=https://raw.githubusercontent.com/sam-whitley/autoscripts/main/PrusaSlicer.ini"
+
 
 :: Check if PrusaSlicer is running using tasklist
 cls
@@ -143,23 +140,23 @@ if errorlevel 1 (
 )
 
 cls
-echo Initiating PrusaSlicer reset...
+echo PrusaSlicer is not running. Initiating PrusaSlicer reset...
 echo.
 echo [INFO] Selected material: %MATERIAL%
 
 :: Check if the backup configuration file exists
 if exist "%BACKUP_CONFIG_FILE%" (
     echo [INFO] Found backup configuration file!
-    echo Do you want to restore the local configuration from backup? Please select Y or N.
-    set /P "choice=Your choice (Y/N): "
+    echo Do you want to restore the local configuration from backup? 
+    set /P "choice=Please select Y or N: "
     if /I "%choice%"=="Y" (
         cls
-        echo [INFO] Restoring from backup...
+        echo [INFO] You chose "Y". Restoring configuration from backup...
         copy /Y "%BACKUP_CONFIG_FILE%" "%LOCAL_CONFIG_FILE%" >nul
         echo [SUCCESS] Configuration restored successfully!
     ) else if /I "%choice%"=="N" (
         cls
-        echo [INFO] Skipping restore from backup...
+        echo [INFO] You chose "N". Skipping restore from backup...
         echo [INFO] Downloading default settings from GitHub...
         
         :: Create backup directory if it doesn't exist
@@ -180,6 +177,7 @@ if exist "%BACKUP_CONFIG_FILE%" (
         )
     ) else (
         cls
+        echo [DEBUG] %choice%
         echo [ERROR] Invalid choice. Please select Y or N.
         pause
         goto :reset_prusa_slicer
