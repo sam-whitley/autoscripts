@@ -1,12 +1,13 @@
 @echo off
 @REM setlocal EnableDelayedExpansion
 
-color 1F
-
 :: [Variables]
+color 1F
 set "version=0.1.3"
 set "GITHUB_URL=https://raw.githubusercontent.com/sam-whitley/autoscripts/main/PrusaSlicer.ini"
 set CONFIG_FILE=C:\Users\%USERNAME%\AppData\Roaming\PrusaSlicer\PrusaSlicer.ini
+set PRINT_FOLDER=C:\Users\%USERNAME%\AppData\Roaming\PrusaSlicer\print
+set FILAMENT_FOLDER=C:\Users\%USERNAME%\AppData\Roaming\PrusaSlicer\filament
 
 :: [3D-Printer Menu]
 :printer_menu
@@ -17,7 +18,7 @@ echo.
 echo [../3D-Printers]
 echo [1] Back 
 echo [2] Prusa
-echo [3] UltiMaker
+echo [3] UltiMaker (WIP)
 echo.
 set /P "var=Choose an option [1-3]: "
 
@@ -40,18 +41,21 @@ echo.
 echo [../3D-Printers/Prusa]
 echo [1] Back
 echo [2] Reset PrusaSlicer Configuration
-echo [3] Open Configuration Folder
+echo [3] Delete PrusaSlicer User Presets
+echo [4] Open Configuration Folder
+
 echo.
-set /P "var=Choose an option [1-3]: "
+set /P "var=Choose an option [1-4]: "
 
 :: [Prusa Menu Options]
 if "%var%"=="1" goto :printer_menu
 if "%var%"=="2" goto :reset_prusa_slicer
-if "%var%"=="3" (
-    start "" "C:\Users\%USERNAME%\AppData\Roaming\PrusaSlicer"
+if "%var%"=="3" goto :delete_user_presets
+if "%var%"=="4" (
     cls
     echo Opening PrusaSlicer Configuration Folder...
     echo.
+    start "" "C:\Users\%USERNAME%\AppData\Roaming\PrusaSlicer"
     pause
     goto :prusa_menu
 )
@@ -60,6 +64,31 @@ cls
 echo [ERROR] Invalid selection! Please choose a valid option.
 pause
 goto prusa_menu
+
+:: [Delete Printer Settings Presets]
+:delete_user_presets
+set "folders=%PRINT_FOLDER% %FILAMENT_FOLDER%"
+cls
+echo Initiating PrusaSlicer user presets deletion process...
+echo.
+echo [INFO] Deleting all user printer and filament presets...
+:: Iterate over the folders and delete their contents
+for %%f in (%folders%) do (
+    if exist "%%f" (
+        echo [INFO] Deleting contents of "%%f"...
+        del /Q "%%f\*.*" >nul 2>&1
+        if errorlevel 1 (
+            echo [ERROR] Could not delete presets in "%%f". Please check file locks or permissions.
+        ) else (
+            echo [SUCCESS] Presets in "%%f" deleted!
+        )
+    ) else (
+        echo [INFO] Folder "%%f" does not exist or is already empty.
+    )
+)
+echo [DONE] All specified folders processed!
+pause
+goto :prusa_menu
 
 :: [Cura Menu]
 :cura_menu
@@ -91,7 +120,7 @@ echo [../3D-Printers/Prusa/ResetPrusaSlicer]
 echo [1] Back
 echo [2] PLA
 echo [3] ABS
-echo [4] PLA and ABS
+echo [4] PLA and ABS (WIP)
 echo.
 set /P "var=Choose a material [1-4]: "
 
@@ -109,7 +138,7 @@ set "MATERIAL="
 if "%var%"=="1" goto :prusa_menu
 if "%var%"=="2" set "MATERIAL=PLA"
 if "%var%"=="3" set "MATERIAL=ABS"
-if "%var%"=="4" set "MATERIAL=PLA-ABS"
+@REM if "%var%"=="4" set "MATERIAL=ABS/PLA"
 
 :: Check if MATERIAL is set correctly
 if not defined MATERIAL (
