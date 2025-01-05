@@ -101,9 +101,17 @@ echo [2] PLA
 echo [3] ABS
 echo [4] PLA and ABS
 echo.
-set /P "var=Choose a material [1-4]: "
+set "var="
+set /P "var=(Work in Progress) Choose a material [1-4]: "
 
-:: Initialize MATERIAL variable
+:: Handle empty input
+if "%var%"=="" (
+    cls
+    echo [ERROR] Invalid selection! Please choose a valid option.
+    pause
+    goto :reset_prusa_slicer
+)
+
 set "MATERIAL="
 
 :: [Material Selection]
@@ -121,11 +129,10 @@ if not defined MATERIAL (
 )
 
 :: Construct the GITHUB_URL based on MATERIAL
-set "GITHUB_URL=https://raw.githubusercontent.com/sam-whitley/autoscripts/main/PrusaSlicer-%MATERIAL%.ini"
+set "GITHUB_URL=https://raw.githubusercontent.com/sam-whitley/autoscripts/main/PrusaSlicer.ini"
 
 :: Check if PrusaSlicer is running using tasklist
 cls
-
 tasklist /FI "IMAGENAME eq prusa-slicer.exe" 2>NUL | find /I "prusa-slicer.exe" > NUL
 if errorlevel 1 (
     rem PrusaSlicer is not running, proceed with reset
@@ -138,31 +145,45 @@ if errorlevel 1 (
 cls
 echo Initiating PrusaSlicer reset...
 echo.
+echo [INFO] Selected material: %MATERIAL%
 
-:: Debugging output for checking URL and material
-echo [DEBUG] Selected material: %MATERIAL%
-
-:: TO-DO FIX THIS SECTION BELOW
-
-
-:: Check if the backup configuration file exists TODO: FIX THIS
+:: Check if the backup configuration file exists
 if exist "%BACKUP_CONFIG_FILE%" (
     echo [INFO] Found backup configuration file!
-    
-    :: Compare the local and backup configuration files
-    fc /B "%LOCAL_CONFIG_FILE%" "%BACKUP_CONFIG_FILE%" >nul
-    if errorlevel 1 (
-        echo [INFO] Local configuration file is outdated or corrupted.
+    echo Do you want to restore the local configuration from backup? Please select Y or N.
+    set /P "choice=Your choice (Y/N): "
+    if /I "%choice%"=="Y" (
+        cls
         echo [INFO] Restoring from backup...
         copy /Y "%BACKUP_CONFIG_FILE%" "%LOCAL_CONFIG_FILE%" >nul
         echo [SUCCESS] Configuration restored successfully!
+    ) else if /I "%choice%"=="N" (
+        echo [INFO] Downloading default settings from GitHub...
+        
+        :: Create backup directory if it doesn't exist
+        if not exist "%BACKUP_DIR%" (
+            mkdir "%BACKUP_DIR%" >nul
+            echo [SUCCESS] Backup directory created: %BACKUP_DIR%
+        )
+        
+        :: Download default configuration from GitHub
+        powershell -Command "(New-Object System.Net.WebClient).DownloadFile('%GITHUB_URL%', '%BACKUP_CONFIG_FILE%')" >nul
+        
+        if exist "%BACKUP_CONFIG_FILE%" (
+            echo [SUCCESS] Default configuration downloaded successfully!
+        ) else (
+            echo [ERROR] Download failed! Please check your connection or GitHub URL.
+            pause
+            goto :prusa_menu
+        )
     ) else (
-        echo [INFO] Local configuration is already up to date.
+        cls
+        echo [ERROR] Invalid choice. Please select Y or N.
         pause
-        goto :prusa_menu
+        goto :reset_prusa_slicer
     )
 ) else (
-    echo [INFO] Backup configuration not found! Downloading default settings from GitHub...
+    echo [INFO] Backup configuration file not found! Downloading default settings from GitHub...
     
     :: Create backup directory if it doesn't exist
     if not exist "%BACKUP_DIR%" (
@@ -174,20 +195,16 @@ if exist "%BACKUP_CONFIG_FILE%" (
     powershell -Command "(New-Object System.Net.WebClient).DownloadFile('%GITHUB_URL%', '%BACKUP_CONFIG_FILE%')" >nul
     
     if exist "%BACKUP_CONFIG_FILE%" (
-        echo [SUCCESS] Default configuration downloaded successfully.
+        echo [SUCCESS] Default configuration downloaded successfully!
     ) else (
         echo [ERROR] Download failed! Please check your connection or GitHub URL.
         pause
-        exit /b
+        goto :prusa_menu
     )
 )
-
-pause
-goto :prusa_menu
-
 :: Replace "DefaultUser" with the current username in the configuration file
 setlocal EnableDelayedExpansion
-echo [INFO] Updating configuration file with the current username...
+echo [INFO] Updating configuration file with the current username (%USERNAME%)...
 set TEMP_FILE=%BACKUP_CONFIG_FILE%.tmp
 > %TEMP_FILE% (
     for /f "tokens=* delims=" %%i in (%BACKUP_CONFIG_FILE%) do (
@@ -203,7 +220,7 @@ echo [SUCCESS] Configuration file updated!
 echo [INFO] Applying updated settings to the local directory...
 copy /Y "%BACKUP_CONFIG_FILE%" "%LOCAL_CONFIG_FILE%" >nul
 echo [SUCCESS] Configuration applied successfully!
-
+echo [DONE] PrusaSlicer reset complete!
 pause
 goto :prusa_menu
 
