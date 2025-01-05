@@ -147,15 +147,16 @@ if exist "%CONFIG_FILE%" (
     goto :prusa_menu
 )
 
-:: Replace "DefaultUser" with current username and "DefaultMaterial" with selected material
+:: Replace "DefaultUser" with current username and "DefaultMaterial" with the selected material
 setlocal EnableDelayedExpansion
 echo [INFO] Updating configuration file with the current username (%USERNAME%) and material (%MATERIAL%)...
 set TEMP_FILE=%CONFIG_FILE%.tmp
 > %TEMP_FILE% (
     for /f "tokens=* delims=" %%i in (%CONFIG_FILE%) do (
         set "line=%%i"
-        echo !line:DefaultUser=%USERNAME%!
-        echo !line:DefaultMaterial=%MATERIAL%!
+        set "line=!line:DefaultUser=%USERNAME%!"
+        set "line=!line:DefaultMaterial=%MATERIAL%!"
+        echo !line!
     )
 )
 move /Y %TEMP_FILE% %CONFIG_FILE%
