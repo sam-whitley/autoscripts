@@ -6,8 +6,11 @@ color 1F
 set "version=0.1.3"
 set "GITHUB_URL=https://raw.githubusercontent.com/sam-whitley/autoscripts/main/PrusaSlicer.ini"
 set CONFIG_FILE=C:\Users\%USERNAME%\AppData\Roaming\PrusaSlicer\PrusaSlicer.ini
-set PRINT_FOLDER=C:\Users\%USERNAME%\AppData\Roaming\PrusaSlicer\print
-set FILAMENT_FOLDER=C:\Users\%USERNAME%\AppData\Roaming\PrusaSlicer\filament
+set BASE_PATH=C:\Users\%USERNAME%\AppData\Roaming\PrusaSlicer
+
+set PRINT_FOLDER=%BASE_PATH%\print
+set FILAMENT_FOLDER=%BASE_PATH%\filament
+set PRINTER_FOLDER=%BASE_PATH%\printer
 
 :: [3D-Printer Menu]
 :printer_menu
@@ -65,13 +68,15 @@ echo [ERROR] Invalid selection! Please choose a valid option.
 pause
 goto prusa_menu
 
-:: [Delete Printer Settings Presets]
+:: [Delete User Presets]
 :delete_user_presets
-set "folders=%PRINT_FOLDER% %FILAMENT_FOLDER%"
+set "folders=%BASE_PATH%\print %BASE_PATH%\filament %BASE_PATH%\printer"
+
 cls
 echo Initiating PrusaSlicer user presets deletion process...
 echo.
-echo [INFO] Deleting all user printer and filament presets...
+echo [INFO] Deleting all user presets...
+
 :: Iterate over the folders and delete their contents
 for %%f in (%folders%) do (
     if exist "%%f" (
@@ -86,6 +91,8 @@ for %%f in (%folders%) do (
         echo [INFO] Folder "%%f" does not exist or is already empty.
     )
 )
+
+echo.
 echo [DONE] All specified folders processed!
 pause
 goto :prusa_menu
@@ -188,12 +195,13 @@ set TEMP_FILE=%CONFIG_FILE%.tmp
         echo !line!
     )
 )
-move /Y %TEMP_FILE% %CONFIG_FILE%
+move /Y %TEMP_FILE% %CONFIG_FILE% >nul
 setlocal DisableDelayedExpansion
 echo [SUCCESS] Configuration file updated!
 
 echo [INFO] Applying updated settings to the local directory...
 echo [SUCCESS] Configuration applied successfully!
+echo.
 echo [DONE] PrusaSlicer reset complete!
 pause
 goto :prusa_menu
