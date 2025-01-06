@@ -1,8 +1,9 @@
 # Sam's AutoScripts
-This collection of batch scripts automates common tasks, such as resetting 3D printer configurations (PrusaSlicer and UltiMaker Cura) to their default settings. More to come!
+This collection of batch scripts automates common tasks, such as resetting 3D printer configurations (PrusaSlicer and UltiMaker Cura) to their default settings.
 
-## 🚀 Features
-- WIP
+## 🚀 Upcoming Features
+- **Automate tasks using Windows Task Scheduler (WIP)**
+  - E.g., trigger a task every day at 20:00 to delete unnecessary PrusaSlicer user presets.
 
 ## 🛠️ Getting Started
 To run Sam's AutoScripts, follow the steps below:
